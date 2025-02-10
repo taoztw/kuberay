@@ -105,7 +105,7 @@ def parse_vllm_args(cli_args: Dict[str, str]):
     # for key, value in cli_args.items():
     #     arg_strings.extend([f"--{key}", str(value)])
     for key, value in cli_args.items():
-        if isinstance(value, bool):
+        if value == "True":
             logger.info("是布尔")
             if value:
                 arg_strings.append(f"--{key}")
