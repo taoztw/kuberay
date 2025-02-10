@@ -103,15 +103,8 @@ def parse_vllm_args(cli_args: Dict[str, str]):
 
     parser = make_arg_parser(arg_parser)
     arg_strings = []
-    # for key, value in cli_args.items():
-    #     arg_strings.extend([f"--{key}", str(value)])
     for key, value in cli_args.items():
-        if value == "True":
-            logger.info("是布尔")
-            if value:
-                arg_strings.append(f"--{key}")
-        else:
-            arg_strings.extend([f"--{key}", str(value)])
+        arg_strings.extend([f"--{key}", str(value)])
     logger.info(arg_strings)
     parsed_args = parser.parse_args(args=arg_strings)
     return parsed_args
@@ -128,6 +121,7 @@ def build_app(cli_args: Dict[str, str]) -> serve.Application:
     parsed_args = parse_vllm_args(cli_args)
     engine_args = AsyncEngineArgs.from_cli_args(parsed_args)
     engine_args.worker_use_ray = True
+    engine_args.trust_remote_code = True
 
     return VLLMDeployment.bind(
         engine_args,
@@ -140,4 +134,4 @@ def build_app(cli_args: Dict[str, str]) -> serve.Application:
 
 
 model = build_app(
-    {"model": os.environ['MODEL_ID'], "trust-remote-code":"True", "tensor-parallel-size": os.environ['TENSOR_PARALLELISM'], "pipeline-parallel-size": os.environ['PIPELINE_PARALLELISM']})
+    {"model": os.environ['MODEL_ID'], "tensor-parallel-size": os.environ['TENSOR_PARALLELISM'], "pipeline-parallel-size": os.environ['PIPELINE_PARALLELISM']})
